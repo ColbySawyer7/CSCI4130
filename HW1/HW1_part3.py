@@ -15,6 +15,18 @@ from colorama import Fore, Style
 
 ps = PorterStemmer()
 
+def reachingTarget(target, vocabCount):
+    count = 0
+    countNum = 1
+    for member in vocabCount:
+        count += member
+        if count >= target:
+            return countNum
+        else:
+            countNum+=1
+    return 0
+
+
 print("Welcome to the Tokenizer")
 tokenizer = RegexpTokenizer(r"\w+")
 dir_name = input("Input the collection directory name:")
@@ -32,6 +44,7 @@ dict = Counter(tokens)
 tokenUnique = dict.keys()
 tokenUniqueCount = dict.values()
 
+#TODO: Answer Questions
 numWords = len(tokens)
 staticNumWords = numWords
 print("\n1. Number of Words \t" + str(numWords))
@@ -48,20 +61,19 @@ print(topTwenty)
 stopWords = set(stopwords.words('english'))
 stopWordsFrom20 = []
 for member in topTwenty:
-    if member in stopWords:
+    if member.lower() in stopWords:
         stopWordsFrom20.append(member)
 
 print("\n4. Top 20 Words (Stop Words): " + str(len(stopWordsFrom20)))
 print(stopWordsFrom20)
 
-target = round(vocabSize * .15);
-numTarget = 0
-for x in tokenUniqueCount:
-    if x >= target:
-        numTarget += 1
-print("\n5. Number of words that occur " + str(target) + " or more times : " + str(numTarget))
+target = round(numWords * .15)
+numTarget = reachingTarget(target, tokenUniqueCount)
+
+print("\n5. Number of words to reach Target: " + str(target) + " or more times : " + str(numTarget))
 
 print("\n\nAFTER STEM AND STOP WORD REMOVAL:")
+print(".............Loading, Please wait this takes alot of time............")
 #Stem and Remove Stop Words
 #TODO Implement Porter Stemmer
 for x in tokens:
@@ -75,29 +87,26 @@ for member in dict.copy():
     if member.lower() in stopWords:
         countVocabRemoved += 1
         dict.pop(member)
-        tokens.remove(member)
+        tokens = list(filter(lambda x: x != member, tokens))
 
 tokenUnique = dict.keys()
 tokenUniqueCount = dict.values()
 
 vocabSizeAfter = len(tokenUnique)
 numWords = len(tokens)
-print("\n1. Number of Words \t" + str(numWords) + Fore.RED + "(-" + str(staticNumWords-numWords) + ")" + Style.RESET_ALL)
+print("\n1. Number of Words \t" + str(numWords) + Fore.RED + "(-" + str(staticNumWords - numWords) + ")" + Style.RESET_ALL)
 
 vocabSize = len(tokenUnique)
-print("\n2. Vocabulary Size\t" + str(vocabSize)+ Fore.RED + "(-" + str(staticVocabSize - vocabSizeAfter) + ")" + Style.RESET_ALL)
+print("\n2. Vocabulary Size\t" + str(vocabSize) + Fore.RED + "(-" + str(staticVocabSize - vocabSizeAfter) + ")" + Style.RESET_ALL)
 
 sortedDict = OrderedDict(sorted(dict.items(), key=lambda x: x[1], reverse=True))
 topTwenty = {k: sortedDict[k] for k in list(sortedDict)[:20]}
 print("\n3. Top 20 Words:\n")
 print(topTwenty)
 
-target = round(vocabSize * .15);
-numTarget = 0
-for x in tokenUniqueCount:
-    if x >= target:
-        numTarget += 1
-print("\n5. Number of words that occur " + str(target) + " or more times : " + str(numTarget))
+target = round(numWords * .15)
+numTarget = reachingTarget(target, sortedDict.values())
+print("\n5. Number of words to reach Target: " + str(target) + " or more times : " + str(numTarget))
 
 #=============================================================
 #DEBUG SECTION

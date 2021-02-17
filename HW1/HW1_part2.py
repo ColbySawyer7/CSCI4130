@@ -10,6 +10,17 @@ from collections import OrderedDict
 from collections import Counter
 from nltk.corpus import stopwords
 import itertools
+def reachingTarget(target, vocabCount):
+    count = 0
+    countNum = 1
+    for member in vocabCount:
+        count += member
+        if count >= target:
+            return countNum
+        else:
+            countNum+=1
+    return 0
+
 
 print("Welcome to the Tokenizer")
 tokenizer = RegexpTokenizer(r"\w+")
@@ -28,6 +39,7 @@ dict = Counter(tokens)
 tokenUnique = dict.keys()
 tokenUniqueCount = dict.values()
 
+#TODO: Answer Questions
 numWords = len(tokens)
 print("\n1. Number of Words \t" + str(numWords))
 
@@ -48,12 +60,10 @@ for member in topTwenty:
 print("\n4. Top 20 Words (Stop Words): " + str(len(stopWordsFrom20)))
 print(stopWordsFrom20)
 
-target = round(numWords * .15);
-numTarget = 0
-for x in tokenUniqueCount:
-    if x >= target:
-        numTarget += 1
-print("\n5. Number of words that occur " + str(target) + " or more times : " + str(numTarget))
+target = round(numWords * .15)
+numTarget = reachingTarget(target, tokenUniqueCount)
+
+print("\n5. Number of words to reach Target: " + str(target) + " or more times : " + str(numTarget))
 
 #=============================================================
 #DEBUG SECTION
